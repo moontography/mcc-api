@@ -46,6 +46,7 @@ export default async function OKLGSupply(app: Application) {
       const ethContract = ERC20(ethWeb3, walletInfo.eth.token);
       const [
         bscTotalSupply,
+        ethTotalSupply,
         bscDecimals,
         bscBurnedAddyBal,
         // ethTotalSupply,
@@ -53,6 +54,7 @@ export default async function OKLGSupply(app: Application) {
         ethBurnedAddyBal,
       ] = await Promise.all([
         bscContract.methods.totalSupply().call(),
+        ethContract.methods.totalSupply().call(),
         bscContract.methods.decimals().call(),
         bscContract.methods.balanceOf(burnWallet).call(),
         // ethContract.methods.totalSupply().call(),
@@ -61,6 +63,7 @@ export default async function OKLGSupply(app: Application) {
       ]);
       res.send(
         getBalance(bscTotalSupply, bscDecimals)
+          .plus(getBalance(ethTotalSupply, bscDecimals))
           .minus(getBalance(bscBurnedAddyBal, bscDecimals))
           .minus(getBalance(ethBurnedAddyBal, ethDecimals))
           .toString()
