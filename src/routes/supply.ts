@@ -118,6 +118,31 @@ export default async function OKLGSupply(app: Application) {
       }
     }
   );
+
+  app.get("/burned", async function burnedRoute(_: Request, res: Response) {
+    try {
+      // const bscContract = ERC20(bscWeb3, walletInfo.bsc.token);
+      const ethContract = ERC20(ethWeb3, walletInfo.eth.token);
+      const [/* bscDecimals, */ ethDecimals] = await Promise.all([
+        // bscContract.methods.decimals().call(),
+        ethContract.methods.decimals().call(),
+      ]);
+      const [
+        // bscBurnedAddyBal,
+        ethBurnedAddyBal,
+      ] = await Promise.all([
+        // bscContract.methods.balanceOf(burnWallet).call(),
+        ethContract.methods.balanceOf(burnWallet).call(),
+      ]);
+      res.send(
+        getBalance(ethBurnedAddyBal, ethDecimals)
+          // .plus(getBalance(bscBurnedAddyBal, bscDecimals))
+          .toString()
+      );
+    } catch (err: any) {
+      res.status(500).json({ error: err.stack });
+    }
+  });
 }
 
 function getBalance(bal: number | string, decimals: number | string) {
