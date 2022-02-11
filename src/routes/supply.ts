@@ -1,7 +1,7 @@
 import assert from "assert";
 import BigNumber from "bignumber.js";
 import { Application, Request, Response } from "express";
-import Web3 from "web3";
+import { IRouteOptions } from "./index";
 import ERC20 from "../libs/ERC20";
 
 assert(process.env.INFURA_API_KEY, "No Infura API key for ETH mainnet");
@@ -30,16 +30,12 @@ const walletInfo: any = {
 };
 const burnWallet = "0x000000000000000000000000000000000000dEaD";
 
-const bscWeb3 = new Web3(
-  new Web3.providers.HttpProvider(`https://bsc-dataseed.binance.org`)
-);
-const ethWeb3 = new Web3(
-  new Web3.providers.HttpProvider(
-    `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`
-  )
-);
-
-export default async function OKLGSupply(app: Application) {
+export default async function Supply(
+  app: Application,
+  { bsc: bscWeb3, eth: ethWeb3 }: IRouteOptions
+) {
+  assert(bscWeb3, "web3 instance not provided");
+  assert(ethWeb3, "web3 instance not provided");
   app.get("/total", async function totalRoute(_: Request, res: Response) {
     try {
       const bscContract = ERC20(bscWeb3, walletInfo.bsc.token);

@@ -1,18 +1,23 @@
 import bunyan from "bunyan";
 import { Application } from "express";
 import { Redis } from "ioredis";
+import Web3 from "web3";
 import main from "./main";
+import nft from "./nft";
 import supply from "./supply";
 
 export interface IRouteOptions {
-  log: bunyan;
-  redis: Redis;
+  bsc?: Web3;
+  eth?: Web3;
+  log?: bunyan;
+  redis?: Redis;
 }
 
 export default async function Routes(
   app: Application,
-  { log, redis }: IRouteOptions
+  { bsc, eth, log, redis }: IRouteOptions
 ) {
   main(app);
-  supply(app);
+  nft(app, { bsc, eth, log });
+  supply(app, { bsc, eth });
 }
